@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Fábrica / Marca — Autenticación de Prendas</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --primary: #1d4ed8;
+      --primary-hover: #1e40af;
+      --accent: #e0f2fe;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --ok-bg: #dcfce7;
+      --ok-text: #166534;
+      --err-bg: #fee2e2;
+      --err-text: #991b1b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    header {
+      background: var(--card);
+      border-left: 6px solid var(--primary);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .badge {
+      background: var(--accent);
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    }
+
+    h1 { font-size: 1.35rem; margin-bottom: 0.25rem; }
+    h2 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--primary); }
+    p.sub { color: var(--muted); font-size: 0.92rem; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .field { margin-bottom: 1rem; }
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    input:focus {
+      outline: 2px solid #93c5fd;
+      border-color: var(--primary);
+    }
+
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover { background: var(--primary-hover); }
+
+    .status-box {
+      margin-top: 1rem;
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .status-box.ok { display: block; background: var(--ok-bg); color: var(--ok-text); }
+    .status-box.err { display: block; background: var(--err-bg); color: var(--err-text); }
+
+    .hash-preview {
+      font-family: monospace;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      word-break: break-all;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin-top: 0.5rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.6rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    th { color: var(--muted); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Panel de Fábrica / Marca</h1>
+        <p class="sub">Alta inicial de prendas y generación de compromiso criptográfico</p>
+      </div>
+      <span class="badge">Org1 · Estado inicial: EN_FABRICA</span>
+    </header>
+
+    <section class="card">
+      <h2>Registrar Nueva Prenda</h2>
+      <form id="formPrenda">
+        <div class="grid-2">
+          <div class="field">
+            <label for="idPrenda">ID de la Prenda (QR Público)</label>
+            <input id="idPrenda" type="text" placeholder="Ej: PRENDA-1001" required />
+          </div>
+          <div class="field">
+            <label for="marcaId">ID de la Marca / Fabricante</label>
+            <input id="marcaId" type="text" value="MARCA-01" required />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="secreto">Código Secreto (Sello Raspable)</label>
+            <input id="secreto" type="text" placeholder="Ej: SECRETO-XYZ-987" required />
+            <div class="hash-preview" id="hashPreview">Hash SHA-256: —</div>
+          </div>
+          <div class="field">
+            <label for="metadatoHash">Hash de Metadatos (Lote / Certificados)</label>
+            <input id="metadatoHash" type="text" placeholder="Ej: sha256-lote-enero-01" required />
+          </div>
+        </div>
+
+        <button type="submit">Registrar Prenda</button>
+      </form>
+
+      <div id="respuestaBox" class="status-box"></div>
+    </section>
+
+    <section class="card">
+      <h2>Prendas Enviadas en Esta Sesión</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID Prenda</th>
+            <th>Marca</th>
+            <th>Estado</th>
+            <th>Hash Secreto (inicio)</th>
+          </tr>
+        </thead>
+        <tbody id="tablaPrendas">
+          <tr>
+            <td colspan="4" style="color: var(--muted);">Aún no has registrado prendas en esta sesión.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:3001/api/registrar-prenda";
+
+    const secretoInput = document.getElementById("secreto");
+    const hashPreview = document.getElementById("hashPreview");
+    const form = document.getElementById("formPrenda");
+    const respuestaBox = document.getElementById("respuestaBox");
+    const tablaPrendas = document.getElementById("tablaPrendas");
+
+    let primeraFila = true;
+
+    async function sha256Hex(texto) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(texto);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    secretoInput.addEventListener("input", async () => {
+      const val = secretoInput.value;
+      if (!val) {
+        hashPreview.textContent = "Hash SHA-256: —";
+        return;
+      }
+      const h = await sha256Hex(val);
+      hashPreview.textContent = `Hash SHA-256: ${h}`;
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const idPrenda = document.getElementById("idPrenda").value.trim();
+      const marcaId = document.getElementById("marcaId").value.trim();
+      const secreto = secretoInput.value;
+      const metadatoHash = document.getElementById("metadatoHash").value.trim();
+
+      const hashSecreto = await sha256Hex(secreto);
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idPrenda, marcaId, hashSecreto, metadatoHash }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          respuestaBox.className = "status-box err";
+          respuestaBox.textContent = `Error: ${data.error || "No se pudo registrar la prenda"}`;
+          return;
+        }
+
+        respuestaBox.className = "status-box ok";
+        respuestaBox.textContent = JSON.stringify(data, null, 2);
+
+        if (primeraFila) {
+          tablaPrendas.innerHTML = "";
+          primeraFila = false;
+        }
+
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td><strong>${data.datosPrenda.id}</strong></td>
+          <td>${data.datosPrenda.marcaId}</td>
+          <td>${data.datosPrenda.estado}</td>
+          <td style="font-family: monospace;">${data.datosPrenda.hashSecreto.slice(0, 14)}...</td>
+        `;
+        tablaPrendas.prepend(fila);
+
+        form.reset();
+        document.getElementById("marcaId").value = marcaId;
+        hashPreview.textContent = "Hash SHA-256: —";
+      } catch (err) {
+        respuestaBox.className = "status-box err";
+        respuestaBox.textContent = `No se pudo conectar con backend-fabrica (${API_URL}). Asegúrate de tenerlo corriendo con "node server.js".\nDetalle: ${err.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
